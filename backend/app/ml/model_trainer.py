@@ -58,9 +58,8 @@ def train_and_benchmark_models() -> dict:
     t_c3_ms = (time.perf_counter() - t0) / n_test * 1000.0
 
     # 3. Calibration ECE verification (C5 & C6)
-    # Generate calibrated probability test set
     raw_p = np.random.uniform(0.50, 0.95, n_test)
-    calibrated_p = confidence_engine.calibrator.predict(raw_p)
+    calibrated_p = np.array([confidence_engine.calibrate_score(p) for p in raw_p])
     sim_outcomes = (np.random.rand(n_test) < calibrated_p).astype(int)
     ece_score = confidence_engine.compute_ece(sim_outcomes, calibrated_p)
 

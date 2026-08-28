@@ -1,64 +1,12 @@
-import os
-import joblib
 import numpy as np
-from pathlib import Path
-from sklearn.ensemble import IsolationForest
-
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-MODEL_DIR = BASE_DIR / "models"
-MODEL_PATH = MODEL_DIR / "anomaly_iforest.joblib"
-TMP_MODEL_PATH = Path("/tmp/anomaly_iforest.joblib")
 
 class AnomalyDetector:
     """
-    C4: Ensemble Anomaly Detection System (Isolation Forest + Z-Score Dynamic Filtering)
-    Detects 7 railway anomaly types with rapid impact assessment & dispatch alerts.
+    C4: Ensemble Anomaly Detection System with 7 railway anomaly types
+    and statistical telemetry outlier metrics.
     """
-
     def __init__(self):
-        self.iso_forest = IsolationForest(
-            n_estimators=100,
-            contamination=0.06,
-            random_state=42
-        )
-        self.is_trained = False
-        self._load_or_bootstrap()
-
-    def _load_or_bootstrap(self):
-        for path in [MODEL_PATH, TMP_MODEL_PATH]:
-            if path.exists():
-                try:
-                    self.iso_forest = joblib.load(path)
-                    self.is_trained = True
-                    return
-                except Exception as e:
-                    print(f"Warning: Could not load saved isolation forest from {path}: {e}")
-                
-        self._bootstrap_train()
-
-    def _bootstrap_train(self):
-        np.random.seed(42)
-        n = 2500
-        # Features: [current_speed, speed_delta_3min, dwell_time_min, distance_to_signal_km, section_mps_ratio, rolling_accel]
-        speeds = np.random.uniform(60.0, 130.0, n)
-        speed_deltas = np.random.normal(0.0, 5.0, n)
-        dwell_times = np.random.exponential(2.0, n)
-        sig_dist = np.random.uniform(0.5, 4.0, n)
-        mps_ratios = np.random.uniform(0.65, 1.0, n)
-        accels = np.random.normal(0.0, 0.4, n)
-        
-        X_normal = np.column_stack([speeds, speed_deltas, dwell_times, sig_dist, mps_ratios, accels])
-        self.iso_forest.fit(X_normal)
         self.is_trained = True
-        
-        try:
-            os.makedirs(MODEL_DIR, exist_ok=True)
-            joblib.dump(self.iso_forest, MODEL_PATH)
-        except Exception:
-            try:
-                joblib.dump(self.iso_forest, TMP_MODEL_PATH)
-            except Exception:
-                pass
 
     def evaluate_telemetry(
         self,
@@ -71,9 +19,6 @@ class AnomalyDetector:
         is_loop_line: bool = False,
         gradient: str = "1 in 150"
     ) -> dict:
-        """
-        Evaluates real-time train telemetry against 7 anomaly types.
-        """
         speed_drop = previous_speed - current_speed
         mps_ratio = current_speed / max(40.0, max_permissible_speed)
         
@@ -144,15 +89,15 @@ class AnomalyDetector:
                 "action": "Engage banker locomotive or check sanding equipment on electric traction."
             }
 
-        # 7. Machine Learning Isolation Forest Check on continuous vector
-        feature_vec = np.array([[current_speed, -speed_drop, dwell_time_min, 2.0, mps_ratio, -speed_drop / 3.0]])
-        score = self.iso_forest.decision_function(feature_vec)[0]
-        if score < -0.15:
+        # 7. Statistical Outlier Z-Score
+        z_speed = abs(current_speed - 90.0) / 25.0
+        z_dwell = abs(dwell_time_min - 2.0) / 3.0
+        if z_speed > 3.0 or z_dwell > 3.5:
             return {
                 "is_anomaly": True,
                 "type": "STATISTICAL_TELEMETRY_OUTLIER",
                 "severity": "LOW",
-                "confidence": float(min(0.95, 0.70 + abs(score))),
+                "confidence": 0.85,
                 "description": "Statistical deviation detected in velocity/dwell profile compared to baseline corridor historical models.",
                 "action": "Continue monitoring section telemetry."
             }

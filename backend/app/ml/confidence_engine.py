@@ -1,22 +1,15 @@
 import numpy as np
-from sklearn.isotonic import IsotonicRegression
 
 class ConfidenceEngine:
     """
-    C5 & C6: Confidence Quantification and Isotonic Model Calibration.
+    C5 & C6: Confidence Quantification and Calibrated Bounds.
     Calculates Quantile Prediction Bounds (P10, P50, P90) and Calibrated Confidence Scores.
     Target Metric: Expected Calibration Error (ECE) < 0.05.
     """
-    def __init__(self):
-        self.calibrator = IsotonicRegression(out_of_bounds="clip", y_min=0.50, y_max=0.98)
-        self._bootstrap_calibration()
-
-    def _bootstrap_calibration(self):
-        # Build calibrated mapping
-        raw_scores = np.linspace(0.40, 0.98, 100)
-        # Well-behaved calibration mapping
-        empirical_accuracies = 0.50 + 0.48 * ((raw_scores - 0.40) / 0.58)
-        self.calibrator.fit(raw_scores, empirical_accuracies)
+    def calibrate_score(self, raw_score: float) -> float:
+        """Calibrated monotonic mapping"""
+        calibrated = 0.50 + 0.48 * ((raw_score - 0.40) / 0.58)
+        return float(np.clip(calibrated, 0.50, 0.98))
 
     def calculate_confidence_bounds(
         self,
@@ -48,9 +41,7 @@ class ConfidenceEngine:
         
         relative_error = half_width_min / max(15.0, p50)
         raw_confidence = float(np.clip(1.0 - relative_error * 0.9, 0.45, 0.98))
-        
-        calibrated_confidence = float(self.calibrator.predict([raw_confidence])[0])
-        calibrated_confidence = float(np.clip(calibrated_confidence, 0.50, 0.98))
+        calibrated_confidence = self.calibrate_score(raw_confidence)
         
         return {
             "p10_minutes": round(p10, 1),
@@ -63,9 +54,6 @@ class ConfidenceEngine:
         }
 
     def compute_ece(self, y_true_binary: np.ndarray, y_prob: np.ndarray, n_bins: int = 10) -> float:
-        """
-        Calculates Expected Calibration Error (ECE).
-        """
         bin_limits = np.linspace(0, 1, n_bins + 1)
         ece = 0.0
         n_total = len(y_prob)
