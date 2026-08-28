@@ -1,0 +1,24 @@
+{
+  "name": "railcast-ai-platform",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Next-Gen Dynamic Railway ETA, Delay Recovery & Operational Intelligence Platform",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview",
+    "lint": "npm --prefix frontend run lint",
+    "postinstall": "npm --prefix frontend install"
+  },
+  "keywords": [
+    "railway",
+    "eta-prediction",
+    "xgboost",
+    "explainable-ai",
+    "fastapi",
+    "react",
+    "vercel"
+  ],
+  "author": "SIH26028 Winning Team",
+  "license": "MIT"
+}
