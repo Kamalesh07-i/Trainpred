@@ -18,6 +18,18 @@ export interface TrainSummary {
   longitude: number;
 }
 
+// NEW: Track Motion AI — represents an object/obstruction detected on the
+// track ahead of the train (worker, animal, debris, vehicle, etc.)
+export interface TrackMotionEvent {
+  detected: boolean;
+  object_type?: "PERSON" | "ANIMAL" | "DEBRIS" | "VEHICLE" | "MAINTENANCE_CREW" | "UNKNOWN";
+  confidence_percentage?: number;
+  detected_at_km?: number;
+  delay_impact_minutes?: number;
+  description?: string;
+  detected_at?: string; // ISO timestamp
+}
+
 export interface StationETA {
   station_code: string;
   station_name: string;
@@ -29,6 +41,7 @@ export interface StationETA {
   confidence_percentage: number;
   confidence_window_p10_p90: string;
   status: string;
+  track_motion?: TrackMotionEvent; // NEW: optional, populated by Track Motion AI
 }
 
 export interface TrainETAResponse {
@@ -44,7 +57,6 @@ export interface TrainETAResponse {
   active_weather_condition: string;
   upcoming_stations: StationETA[];
 }
-
 export interface ContributingFactor {
   rank: number;
   feature: string;
@@ -53,7 +65,6 @@ export interface ContributingFactor {
   contribution_percent: number;
   explanation: string;
 }
-
 export interface ExplanationResponse {
   train_number: string;
   prediction_time: string;
@@ -66,7 +77,6 @@ export interface ExplanationResponse {
     summary: string;
   };
 }
-
 export interface NetworkStatus {
   total_active_trains: number;
   on_time_trains: number;
@@ -78,7 +88,6 @@ export interface NetworkStatus {
   highest_congestion_section: string;
   system_health: "OPTIMAL" | "ELEVATED_RISK" | "CONGESTED";
 }
-
 export interface RouteSectionRisk {
   section_id: string;
   corridor_name: string;
@@ -91,7 +100,6 @@ export interface RouteSectionRisk {
   active_trains: number;
   signalling: string;
 }
-
 export interface AlertItem {
   id: number;
   alert_id: string;
@@ -105,7 +113,6 @@ export interface AlertItem {
   is_active: boolean;
   created_at: string;
 }
-
 export interface WhatIfAffectedStation {
   station_code: string;
   station_name: string;
@@ -115,7 +122,6 @@ export interface WhatIfAffectedStation {
   simulated_delay_minutes: number;
   cascade_risk: "LOW" | "MEDIUM" | "HIGH";
 }
-
 export interface WhatIfResponse {
   scenario_id: string;
   scenario_name: string;
@@ -128,7 +134,6 @@ export interface WhatIfResponse {
   affected_stations: WhatIfAffectedStation[];
   mitigation_recommendation: string;
 }
-
 export interface ModelMetricItem {
   model_name: string;
   version: string;
