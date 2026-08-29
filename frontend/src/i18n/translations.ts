@@ -291,6 +291,46 @@ export const translations = {
     ta: 'XAI & ETA ஐ ஆய்வு செய்',
     hi: 'XAI और ईटीए जांचें',
   },
+    anomalyDispatchFeed: {
+    en: 'Real-Time AI Anomaly & Disruption Dispatch Feed',
+    ta: 'நிகழ்நேர AI முரண்பாடு & இடையூறு அனுப்புகை ஊட்டம்',
+    hi: 'रीयल-टाइम AI विसंगति और व्यवधान डिस्पैच फ़ीड',
+  },
+  isolationForestDesc: {
+    en: 'Isolation Forest + Z-score ensemble detections across the national network',
+    ta: 'தேசிய நெட்வொர்க் முழுவதும் Isolation Forest + Z-score கண்டறிதல்கள்',
+    hi: 'राष्ट्रीय नेटवर्क में Isolation Forest + Z-score पहचान',
+  },
+  activeDisruptionsLabel: {
+    en: 'ACTIVE DISRUPTIONS',
+    ta: 'செயலில் உள்ள இடையூறுகள்',
+    hi: 'सक्रिय व्यवधान',
+  },
+  allCorridorsNormal: {
+    en: 'All corridors operating within normal statistical telemetry bounds. No active disruptions.',
+    ta: 'அனைத்து பாதைகளும் இயல்பான தொலைத்தகவல் வரம்பிற்குள் இயங்குகின்றன. செயலில் இடையூறு இல்லை.',
+    hi: 'सभी कॉरिडोर सामान्य सांख्यिकीय टेलीमेट्री सीमा के भीतर काम कर रहे हैं। कोई सक्रिय व्यवधान नहीं।',
+  },
+  trainAlertPrefix: {
+    en: 'Train',
+    ta: 'ரயில்',
+    hi: 'ट्रेन',
+  },
+  sectionAlertLabel: {
+    en: 'Section Alert',
+    ta: 'பிரிவு எச்சரிக்கை',
+    hi: 'सेक्शन अलर्ट',
+  },
+  aiDispatchAdvisory: {
+    en: 'AI Dispatch Advisory:',
+    ta: 'AI அனுப்புகை ஆலோசனை:',
+    hi: 'AI डिस्पैच सलाह:',
+  },
+  authorizeDispatchResolution: {
+    en: 'Authorize Dispatch Resolution',
+    ta: 'அனுப்புகை தீர்வை அங்கீகரி',
+    hi: 'डिस्पैच समाधान अधिकृत करें',
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
