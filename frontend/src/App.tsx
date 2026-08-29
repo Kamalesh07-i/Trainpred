@@ -20,7 +20,6 @@ export const App: React.FC = () => {
   useEffect(() => {
     loadInitialData();
 
-    // Subscribe to WebSocket / HTTP polling live telemetry
     const unsubTelemetry = wsClient.onTelemetry((payload) => {
       if (payload.type === 'TELEMETRY_UPDATE' && payload.trains) {
         setTrains((prev) => {
@@ -46,7 +45,6 @@ export const App: React.FC = () => {
       }
     });
 
-    // Subscribe to WebSocket live alerts
     const unsubAlerts = wsClient.onAlert((payload) => {
       if (payload.type === 'NEW_ALERT') {
         const newAlt: AlertItem = {
@@ -100,15 +98,13 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#121214] text-[#F5F5F7] pb-12 selection:bg-[#007AFF] selection:text-white">
-      {/* Top Main Navigation Header */}
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] pb-12 selection:bg-[#007AFF] selection:text-white">
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         activeAlertsCount={alerts.length}
       />
 
-      {/* Main Content Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6">
         {activeTab === 'passenger' && (
           <PassengerView
@@ -141,7 +137,6 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* Floating Real-Time Anomaly Toast Notifications */}
       <AlertToast alerts={alerts} onResolve={handleResolveAlert} />
     </div>
   );
