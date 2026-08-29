@@ -1,10 +1,80 @@
-import React from 'react';
-import { MapPin } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, Camera, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { StationETA } from '../../types';
 
 interface UpcomingStationsTableProps {
   stations: StationETA[];
 }
+
+// NEW: renders the "Track AI" cell — a compact tag that expands into
+// detail when clicked, showing what the motion-detection AI found (or
+// "Clear" if nothing was detected on that stretch of track).
+const TrackMotionCell: React.FC<{ stationCode: string; stn: StationETA }> = ({ stn }) => {
+  const [expanded, setExpanded] = useState(false);
+  const motion = stn.track_motion;
+  const hasDetection = !!motion?.detected;
+
+  if (!motion) {
+    return <span className="text-[10px] text-[#666]">—</span>;
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-bold border transition-colors ${
+          hasDetection
+            ? 'bg-[#FF9F0A]/10 border-[#FF9F0A]/40 text-[#FF9F0A] hover:bg-[#FF9F0A]/20'
+            : 'bg-[#30D158]/10 border-[#30D158]/40 text-[#30D158] hover:bg-[#30D158]/20'
+        }`}
+      >
+        {hasDetection ? (
+          <AlertTriangle className="w-3 h-3" />
+        ) : (
+          <CheckCircle2 className="w-3 h-3" />
+        )}
+        {hasDetection ? (motion.object_type || 'Obstruction') : 'Clear'}
+      </button>
+
+      {expanded && (
+        <div className="absolute z-30 top-full mt-1 left-0 w-56 p-3 rounded-xl bg-[#1D1D1F] border border-[#2C2C2E] shadow-xl text-left font-sans">
+          <div className="flex items-center gap-1.5 mb-1.5 text-[#007AFF]">
+            <Camera className="w-3.5 h-3.5" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Track Motion AI</span>
+          </div>
+          {hasDetection ? (
+            <>
+              <p className="text-[11px] text-[#F5F5F7] leading-snug mb-1.5">
+                {motion.description || `${motion.object_type} detected on track`}
+              </p>
+              <div className="flex flex-wrap gap-1.5 text-[10px]">
+                {motion.detected_at_km !== undefined && (
+                  <span className="px-1.5 py-0.5 rounded bg-[#121214] border border-[#2C2C2E] text-[#AAAAAA]">
+                    KM {motion.detected_at_km}
+                  </span>
+                )}
+                {motion.confidence_percentage !== undefined && (
+                  <span className="px-1.5 py-0.5 rounded bg-[#121214] border border-[#2C2C2E] text-[#AAAAAA]">
+                    {motion.confidence_percentage}% conf.
+                  </span>
+                )}
+                {motion.delay_impact_minutes !== undefined && motion.delay_impact_minutes > 0 && (
+                  <span className="px-1.5 py-0.5 rounded bg-[#FF9F0A]/15 border border-[#FF9F0A]/30 text-[#FF9F0A] font-bold">
+                    +{motion.delay_impact_minutes}m impact
+                  </span>
+                )}
+              </div>
+            </>
+          ) : (
+            <p className="text-[11px] text-[#AAAAAA] leading-snug">
+              No objects or obstructions detected on this section of track.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const UpcomingStationsTable: React.FC<UpcomingStationsTableProps> = ({ stations }) => {
   if (!stations || stations.length === 0) {
@@ -29,7 +99,7 @@ export const UpcomingStationsTable: React.FC<UpcomingStationsTableProps> = ({ st
         </span>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto overflow-y-visible">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="border-b border-[#2C2C2E] text-[#AAAAAA] font-semibold uppercase tracking-wider text-[10px]">
@@ -39,6 +109,7 @@ export const UpcomingStationsTable: React.FC<UpcomingStationsTableProps> = ({ st
               <th className="py-3 px-3">RAIL-CAST Dynamic ETA</th>
               <th className="py-3 px-3">Delay & Recovery</th>
               <th className="py-3 px-3">Confidence (P10-P90)</th>
+              <th className="py-3 px-3">Track AI</th>
               <th className="py-3 px-3">Status</th>
             </tr>
           </thead>
@@ -119,6 +190,11 @@ export const UpcomingStationsTable: React.FC<UpcomingStationsTableProps> = ({ st
                     <div className="text-[10px] text-[#AAAAAA]">
                       {stn.confidence_percentage}% Calibrated
                     </div>
+                  </td>
+
+                  {/* NEW: Track Motion AI */}
+                  <td className="py-3 px-3 font-sans">
+                    <TrackMotionCell stationCode={stn.station_code} stn={stn} />
                   </td>
 
                   {/* Status Badge */}
