@@ -1,12 +1,15 @@
 import React from 'react';
 import { Layers } from 'lucide-react';
 import { RouteSectionRisk } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface CorridorRiskMapProps {
   sections: RouteSectionRisk[];
 }
 
 export const CorridorRiskMap: React.FC<CorridorRiskMapProps> = ({ sections }) => {
+  const { t } = useLanguage();
+
   if (!sections || sections.length === 0) return null;
 
   const getRiskColor = (risk: string) => {
@@ -31,23 +34,23 @@ export const CorridorRiskMap: React.FC<CorridorRiskMapProps> = ({ sections }) =>
           <Layers className="w-5 h-5 text-[#007AFF]" />
           <div>
             <h3 className="text-base font-bold text-[#F5F5F7] tracking-wide">
-              Corridor Section Congestion & Bottleneck Heatmap
+              {t('corridorCongestionHeatmap')}
             </h3>
             <p className="text-xs text-[#AAAAAA]">
-              Live capacity utilization, headway density, and sectional delay absorption
+              {t('liveCapacityDesc')}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3 text-xs font-mono">
           <span className="flex items-center gap-1 text-[#30D158]">
-            <span className="w-2 h-2 rounded-full bg-[#30D158]" /> Optimal (&lt;40%)
+            <span className="w-2 h-2 rounded-full bg-[#30D158]" /> {t('legendOptimal')}
           </span>
           <span className="flex items-center gap-1 text-[#FF9F0A]">
-            <span className="w-2 h-2 rounded-full bg-[#FF9F0A]" /> Elevated (&lt;70%)
+            <span className="w-2 h-2 rounded-full bg-[#FF9F0A]" /> {t('legendElevated')}
           </span>
           <span className="flex items-center gap-1 text-[#FF453A]">
-            <span className="w-2 h-2 rounded-full bg-[#FF453A]" /> Bottleneck (≥70%)
+            <span className="w-2 h-2 rounded-full bg-[#FF453A]" /> {t('legendBottleneck')}
           </span>
         </div>
       </div>
@@ -77,7 +80,7 @@ export const CorridorRiskMap: React.FC<CorridorRiskMapProps> = ({ sections }) =>
               {/* Congestion Load Bar */}
               <div>
                 <div className="flex items-center justify-between text-[10px] font-mono text-[#AAAAAA] mb-1">
-                  <span>Track Density Load:</span>
+                  <span>{t('trackDensityLoad')}</span>
                   <span className="font-bold text-[#F5F5F7]">{congPercent}%</span>
                 </div>
                 <div className="w-full h-2 rounded-full bg-[#1D1D1F] overflow-hidden border border-[#2C2C2E]">
@@ -89,7 +92,7 @@ export const CorridorRiskMap: React.FC<CorridorRiskMapProps> = ({ sections }) =>
               </div>
 
               <div className="flex items-center justify-between text-[10px] text-[#AAAAAA] font-mono mt-3 pt-2 border-t border-[#2C2C2E]">
-                <span>Active Trains: {sec.active_trains}</span>
+                <span>{t('activeTrainsColon')} {sec.active_trains}</span>
                 <span className="truncate max-w-[150px]">{sec.signalling}</span>
               </div>
             </div>
