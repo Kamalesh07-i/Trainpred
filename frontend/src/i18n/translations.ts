@@ -201,6 +201,96 @@ export const translations = {
     ta: 'நிகழ்வுகள்',
     hi: 'घटनाएं',
   },
+    activeFleetRiskMatrix: {
+    en: 'Active Corridor Fleet Risk & Delay Matrix',
+    ta: 'செயலில் உள்ள பாதை வாகன இடர் & தாமத அணி',
+    hi: 'सक्रिय कॉरिडोर बेड़ा जोखिम और देरी मैट्रिक्स',
+  },
+  telemetryPriorityDesc: {
+    en: 'Real-time telemetry and AI priority classification across active routes',
+    ta: 'செயலில் உள்ள வழிகளில் நிகழ்நேர தொலைத்தகவல் & AI முன்னுரிமை வகைப்பாடு',
+    hi: 'सक्रिय मार्गों में रीयल-टाइम टेलीमेट्री और AI प्राथमिकता वर्गीकरण',
+  },
+  activeTrainsLabel: {
+    en: 'ACTIVE TRAINS',
+    ta: 'செயலில் உள்ள ரயில்கள்',
+    hi: 'सक्रिय ट्रेनें',
+  },
+  colTrainType: {
+    en: 'Train / Type',
+    ta: 'ரயில் / வகை',
+    hi: 'ट्रेन / प्रकार',
+  },
+  colPriority: {
+    en: 'Priority',
+    ta: 'முன்னுரிமை',
+    hi: 'प्राथमिकता',
+  },
+  colOriginDestination: {
+    en: 'Origin & Destination',
+    ta: 'தொடக்கம் & இலக்கு',
+    hi: 'मूल और गंतव्य',
+  },
+  colLiveVelocity: {
+    en: 'Live Velocity',
+    ta: 'நேரடி வேகம்',
+    hi: 'लाइव गति',
+  },
+  colDelayStatus: {
+    en: 'Delay Status',
+    ta: 'தாமத நிலை',
+    hi: 'देरी की स्थिति',
+  },
+  colNextWaypoint: {
+    en: 'Next Waypoint',
+    ta: 'அடுத்த வழிப்புள்ளி',
+    hi: 'अगला पड़ाव',
+  },
+  colRiskAssessment: {
+    en: 'Risk Assessment',
+    ta: 'இடர் மதிப்பீடு',
+    hi: 'जोखिम आकलन',
+  },
+  colDispatchActions: {
+    en: 'Dispatch Actions',
+    ta: 'அனுப்புகை நடவடிக்கைகள்',
+    hi: 'डिस्पैच कार्रवाई',
+  },
+  classLabel: {
+    en: 'Class',
+    ta: 'வகுப்பு',
+    hi: 'श्रेणी',
+  },
+  riskCritical: {
+    en: 'CRITICAL RISK',
+    ta: 'கடுமையான இடர்',
+    hi: 'गंभीर जोखिम',
+  },
+  riskHigh: {
+    en: 'HIGH RISK',
+    ta: 'உயர் இடர்',
+    hi: 'उच्च जोखिम',
+  },
+  riskModerate: {
+    en: 'MODERATE',
+    ta: 'மிதமான',
+    hi: 'मध्यम',
+  },
+  riskOnSchedule: {
+    en: 'ON SCHEDULE',
+    ta: 'திட்டப்படி',
+    hi: 'समय पर',
+  },
+  etaLabel: {
+    en: 'ETA:',
+    ta: 'வருகை நேரம்:',
+    hi: 'ईटीए:',
+  },
+  inspectXaiEta: {
+    en: 'Inspect XAI & ETA',
+    ta: 'XAI & ETA ஐ ஆய்வு செய்',
+    hi: 'XAI और ईटीए जांचें',
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
