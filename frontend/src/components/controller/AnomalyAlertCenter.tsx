@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertCircle, AlertTriangle, ShieldAlert, CheckCircle2, Clock, Cpu } from 'lucide-react';
 import { AlertItem } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface AnomalyAlertCenterProps {
   alerts: AlertItem[];
@@ -8,6 +9,8 @@ interface AnomalyAlertCenterProps {
 }
 
 export const AnomalyAlertCenter: React.FC<AnomalyAlertCenterProps> = ({ alerts, onResolveAlert }) => {
+  const { t } = useLanguage();
+
   return (
     <div className="glass-panel p-6 bg-[#1D1D1F]">
       <div className="flex items-center justify-between mb-4">
@@ -15,22 +18,22 @@ export const AnomalyAlertCenter: React.FC<AnomalyAlertCenterProps> = ({ alerts, 
           <ShieldAlert className="w-5 h-5 text-[#FF453A]" />
           <div>
             <h3 className="text-base font-bold text-[#F5F5F7] tracking-wide">
-              Real-Time AI Anomaly & Disruption Dispatch Feed
+              {t('anomalyDispatchFeed')}
             </h3>
             <p className="text-xs text-[#AAAAAA]">
-              Isolation Forest + Z-score ensemble detections across the national network
+              {t('isolationForestDesc')}
             </p>
           </div>
         </div>
         <span className="text-xs font-mono px-2.5 py-1 rounded-lg bg-[#FF453A]/15 border border-[#FF453A]/40 text-[#FF453A] font-bold">
-          {alerts.length} ACTIVE DISRUPTIONS
+          {alerts.length} {t('activeDisruptionsLabel')}
         </span>
       </div>
 
       {alerts.length === 0 ? (
         <div className="p-8 text-center bg-[#121214] rounded-2xl border border-[#2C2C2E] text-[#AAAAAA] text-xs">
           <CheckCircle2 className="w-8 h-8 text-[#30D158] mx-auto mb-2 opacity-80" />
-          All corridors operating within normal statistical telemetry bounds. No active disruptions.
+          {t('allCorridorsNormal')}
         </div>
       ) : (
         <div className="space-y-3">
@@ -56,7 +59,7 @@ export const AnomalyAlertCenter: React.FC<AnomalyAlertCenterProps> = ({ alerts, 
                       {alt.title}
                     </span>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1D1D1F] text-[#AAAAAA] border border-[#2C2C2E]">
-                      {alt.train_number ? `Train ${alt.train_number}` : 'Section Alert'}
+                      {alt.train_number ? `${t('trainAlertPrefix')} ${alt.train_number}` : t('sectionAlertLabel')}
                     </span>
                   </div>
 
@@ -81,7 +84,7 @@ export const AnomalyAlertCenter: React.FC<AnomalyAlertCenterProps> = ({ alerts, 
                   <div className="p-2.5 rounded-lg bg-[#1D1D1F] border border-[#007AFF]/30 text-xs text-[#007AFF] flex items-start gap-2 mb-3">
                     <Cpu className="w-4 h-4 text-[#007AFF] flex-shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-bold text-[#F5F5F7]">AI Dispatch Advisory:</span> {alt.recommendation}
+                      <span className="font-bold text-[#F5F5F7]">{t('aiDispatchAdvisory')}</span> {alt.recommendation}
                     </div>
                   </div>
                 )}
@@ -91,7 +94,7 @@ export const AnomalyAlertCenter: React.FC<AnomalyAlertCenterProps> = ({ alerts, 
                     onClick={() => onResolveAlert(alt.alert_id)}
                     className="px-3.5 py-1.5 bg-[#007AFF] hover:bg-[#0062CC] text-white rounded-lg text-xs font-semibold transition shadow-md shadow-[#007AFF]/20"
                   >
-                    Authorize Dispatch Resolution
+                    {t('authorizeDispatchResolution')}
                   </button>
                 </div>
               </div>
