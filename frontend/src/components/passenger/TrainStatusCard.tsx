@@ -15,6 +15,17 @@ export const TrainStatusCard: React.FC<TrainStatusCardProps> = ({ train, etaData
     ? Math.min(100, Math.round(((train.total_distance_km - (etaData.upcoming_stations[etaData.upcoming_stations.length - 1]?.distance_from_origin_km || 0) + (etaData.upcoming_stations[0]?.distance_from_origin_km || 0)) / train.total_distance_km) * 100))
     : 45;
 
+  // FIX (Bug 1): derive "current section" from the SAME live data the
+  // InteractiveCorridorMap schematic uses, instead of the stale
+  // train.next_station field from the separate /trains list call.
+  // This guarantees the text and the icon always agree.
+  const stations = etaData?.upcoming_stations || [];
+  const foundIndex = stations.findIndex((s) => s.status !== 'DEPARTED');
+  const currentStationIndex = foundIndex === -1 ? stations.length - 1 : foundIndex;
+  const liveNextStation = stations[currentStationIndex]?.station_name
+    || stations[currentStationIndex]?.station_code
+    || train.next_station; // fallback only if eta data hasn't loaded yet
+
   return (
     <div className="glass-panel-glow p-6 bg-[#1D1D1F]">
       {/* Top Banner: Train Identity & Status */}
@@ -140,7 +151,7 @@ export const TrainStatusCard: React.FC<TrainStatusCardProps> = ({ train, etaData
         <div className="flex items-center justify-between text-xs text-[#AAAAAA] mb-1.5">
           <span className="flex items-center gap-1.5">
             <span className="font-semibold text-[#F5F5F7]">Current Section:</span>{' '}
-            {train.next_station ? `En route to ${train.next_station}` : 'In Transit'}
+            {liveNextStation ? `En route to ${liveNextStation}` : 'In Transit'}
           </span>
           <span className="font-mono font-bold text-[#007AFF]">{progressPct}% Complete</span>
         </div>
