@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
   };
 
   return (
-    <header className="sticky top-0 z-50 glass-panel border-b border-[var(--border-c)] px-6 py-3 mb-6 bg-[var(--bg-surface)]/90">
+    <header className="sticky top-0 z-50 glass-panel border-b border-[#2C2C2E] px-6 py-3 mb-6 bg-[#1D1D1F]/90">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Left: Brand / Title */}
         <div className="flex items-center gap-3.5">
