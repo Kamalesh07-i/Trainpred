@@ -171,6 +171,36 @@ export const translations = {
     ta: 'தொகுதி பிரிவுகள் & சிக்னல் முனைகள் முழுவதும் நிகழ்நேர இட முன்னேற்றம்',
     hi: 'ब्लॉक सेक्शन और सिग्नल नोड्स में रीयल-टाइम स्थानिक प्रगति',
   },
+    networkPunctualityRate: {
+    en: 'Network Punctuality Rate',
+    ta: 'நெட்வொர்க் சரியான நேர விகிதம்',
+    hi: 'नेटवर्क समयपालन दर',
+  },
+  activeFleetDensity: {
+    en: 'Active Fleet Density',
+    ta: 'செயலில் உள்ள வாகன அடர்த்தி',
+    hi: 'सक्रिय बेड़ा घनत्व',
+  },
+  activeDisruptionAlerts: {
+    en: 'Active Disruption Alerts',
+    ta: 'செயலில் உள்ள இடையூறு எச்சரிக்கைகள்',
+    hi: 'सक्रिय व्यवधान अलर्ट',
+  },
+  fleetVelocityAverage: {
+    en: 'Fleet Velocity Average',
+    ta: 'சராசரி வாகன வேகம்',
+    hi: 'बेड़ा औसत गति',
+  },
+  trainsUnit: {
+    en: 'Trains',
+    ta: 'ரயில்கள்',
+    hi: 'ट्रेनें',
+  },
+  eventsUnit: {
+    en: 'Events',
+    ta: 'நிகழ்வுகள்',
+    hi: 'घटनाएं',
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
