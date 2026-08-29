@@ -1,9 +1,10 @@
 import React from 'react';
 import { ShieldCheck } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface ConfidenceGaugeProps {
-  score: number; // e.g. 92.4
-  p10_p90_window?: string; // e.g. "14:45 - 14:52"
+  score: number;
+  p10_p90_window?: string;
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -11,6 +12,8 @@ export const ConfidenceGauge: React.FC<ConfidenceGaugeProps> = ({
   score,
   p10_p90_window
 }) => {
+  const { t } = useLanguage();
+
   const getColor = (val: number) => {
     if (val >= 90) return { text: 'text-[#30D158]', stroke: 'stroke-[#30D158]', bg: 'bg-[#30D158]/10', border: 'border-[#30D158]/30' };
     if (val >= 75) return { text: 'text-[#007AFF]', stroke: 'stroke-[#007AFF]', bg: 'bg-[#007AFF]/10', border: 'border-[#007AFF]/30' };
@@ -25,14 +28,13 @@ export const ConfidenceGauge: React.FC<ConfidenceGaugeProps> = ({
 
   return (
     <div className={`flex items-center gap-3 p-2.5 rounded-xl border ${style.bg} ${style.border}`}>
-      {/* Circular Progress Gauge */}
       <div className="relative w-14 h-14 flex items-center justify-center">
         <svg className="w-14 h-14 transform -rotate-90">
           <circle
             cx="28"
             cy="28"
             r={radius}
-            className="stroke-[#2C2C2E]"
+            className="stroke-[var(--border-c)]"
             strokeWidth="5"
             fill="transparent"
           />
@@ -56,17 +58,17 @@ export const ConfidenceGauge: React.FC<ConfidenceGaugeProps> = ({
       <div>
         <div className="flex items-center gap-1">
           <ShieldCheck className={`w-3.5 h-3.5 ${style.text}`} />
-          <span className="text-[11px] font-bold tracking-wide uppercase text-[#F5F5F7]">
-            Calibrated Confidence
+          <span className="text-[11px] font-bold tracking-wide uppercase text-[var(--text-primary)]">
+            {t('calibratedConfidence')}
           </span>
         </div>
         {p10_p90_window && (
-          <div className="text-[10px] font-mono text-[#AAAAAA] mt-0.5">
-            P10-P90 Window: <span className="text-[#F5F5F7] font-semibold">{p10_p90_window}</span>
+          <div className="text-[10px] font-mono text-[var(--text-secondary)] mt-0.5">
+            {t('p10p90Window')} <span className="text-[var(--text-primary)] font-semibold">{p10_p90_window}</span>
           </div>
         )}
-        <div className="text-[9px] text-[#AAAAAA]">
-          ECE &lt; 0.05 Isotonic Regression
+        <div className="text-[9px] text-[var(--text-secondary)]">
+          {t('eceIsotonic')}
         </div>
       </div>
     </div>
