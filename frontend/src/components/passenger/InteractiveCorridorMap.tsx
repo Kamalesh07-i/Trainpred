@@ -10,6 +10,19 @@ interface InteractiveCorridorMapProps {
 export const InteractiveCorridorMap: React.FC<InteractiveCorridorMapProps> = ({ train, stations }) => {
   if (!stations || stations.length === 0) return null;
 
+  // Only show up to 8 stations on the schematic
+  const visibleStations = stations.slice(0, 8);
+
+  // Find the train's real current position: the first station that
+  // hasn't been departed yet. If all have been departed, treat the
+  // last station as current.
+  const foundIndex = visibleStations.findIndex((s) => s.status !== 'DEPARTED');
+  const currentIndex = foundIndex === -1 ? visibleStations.length - 1 : foundIndex;
+
+  // Progress percentage along the track, based on real station position
+  const progressPercent =
+    visibleStations.length > 1 ? (currentIndex / (visibleStations.length - 1)) * 100 : 0;
+
   return (
     <div className="glass-panel p-6 bg-[#1D1D1F] relative overflow-hidden">
       {/* Header */}
@@ -39,17 +52,17 @@ export const InteractiveCorridorMap: React.FC<InteractiveCorridorMapProps> = ({ 
         <div className="min-w-[700px] relative">
           {/* Main Track Line */}
           <div className="absolute top-1/2 left-4 right-4 h-1.5 bg-[#2C2C2E] rounded-full -translate-y-1/2" />
-          {/* Active Track Highlight */}
+          {/* Active Track Highlight - now reflects real progress */}
           <div
             className="absolute top-1/2 left-4 h-1.5 bg-[#007AFF] rounded-full -translate-y-1/2 transition-all duration-700 shadow-md shadow-[#007AFF]/40"
-            style={{ width: '48%' }}
+            style={{ width: `${progressPercent}%` }}
           />
 
           {/* Station Nodes */}
           <div className="relative flex justify-between items-center z-10">
-            {stations.slice(0, 8).map((stn, idx) => {
+            {visibleStations.map((stn, idx) => {
               const isPast = stn.status === 'DEPARTED';
-              const isCurrent = idx === 3;
+              const isCurrent = idx === currentIndex;
 
               return (
                 <div key={stn.station_code} className="flex flex-col items-center group cursor-pointer">
@@ -87,10 +100,10 @@ export const InteractiveCorridorMap: React.FC<InteractiveCorridorMapProps> = ({ 
             })}
           </div>
 
-          {/* Pulsing Live Train Marker */}
+          {/* Pulsing Live Train Marker - now reflects real progress */}
           <div
             className="absolute top-1/2 -translate-y-1/2 z-20 transition-all duration-1000 ease-linear flex flex-col items-center"
-            style={{ left: '46%' }}
+            style={{ left: `${progressPercent}%` }}
           >
             {/* Pulsing Radar Rings */}
             <div className="relative flex items-center justify-center">
