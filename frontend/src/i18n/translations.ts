@@ -331,6 +331,41 @@ export const translations = {
     ta: 'அனுப்புகை தீர்வை அங்கீகரி',
     hi: 'डिस्पैच समाधान अधिकृत करें',
   },
+    corridorCongestionHeatmap: {
+    en: 'Corridor Section Congestion & Bottleneck Heatmap',
+    ta: 'பாதை பிரிவு நெரிசல் & குறுக்கு வெப்ப வரைபடம்',
+    hi: 'कॉरिडोर सेक्शन भीड़भाड़ और बॉटलनेक हीटमैप',
+  },
+  liveCapacityDesc: {
+    en: 'Live capacity utilization, headway density, and sectional delay absorption',
+    ta: 'நேரடி கொள்ளளவு பயன்பாடு, இடைவெளி அடர்த்தி மற்றும் பிரிவு தாமத உறிஞ்சுதல்',
+    hi: 'लाइव क्षमता उपयोग, हेडवे घनत्व और सेक्शनल देरी अवशोषण',
+  },
+  legendOptimal: {
+    en: 'Optimal (<40%)',
+    ta: 'உகந்தது (<40%)',
+    hi: 'इष्टतम (<40%)',
+  },
+  legendElevated: {
+    en: 'Elevated (<70%)',
+    ta: 'உயர்ந்தது (<70%)',
+    hi: 'बढ़ा हुआ (<70%)',
+  },
+  legendBottleneck: {
+    en: 'Bottleneck (≥70%)',
+    ta: 'நெரிசல் (≥70%)',
+    hi: 'बॉटलनेक (≥70%)',
+  },
+  trackDensityLoad: {
+    en: 'Track Density Load:',
+    ta: 'தட வாகன அடர்த்தி சுமை:',
+    hi: 'ट्रैक घनत्व लोड:',
+  },
+  activeTrainsColon: {
+    en: 'Active Trains:',
+    ta: 'செயலில் உள்ள ரயில்கள்:',
+    hi: 'सक्रिय ट्रेनें:',
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
