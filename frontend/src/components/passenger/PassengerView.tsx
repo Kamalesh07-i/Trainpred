@@ -25,14 +25,26 @@ export const PassengerView: React.FC<PassengerViewProps> = ({
   const [loading, setLoading] = useState(false);
   const [anomalyTriggered, setAnomalyTriggered] = useState(false);
 
-  // Active selected train
-  const currentTrain = trains.find((t) => t.train_number === selectedTrainNumber) || trains[0];
+  // FIX (Bug 2): trains fetched on-demand via search (numbers not in the
+  // original `trains` prop list) get stored here so they can still be
+  // selected and rendered just like any of the original trains.
+  const [extraTrains, setExtraTrains] = useState<TrainSummary[]>([]);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [searching, setSearching] = useState(false);
+
+  // All trains we know about right now: the original list + anything
+  // fetched on demand through search.
+  const allTrains = [...trains, ...extraTrains];
+
+  // Active selected train — searches the FULL combined list, and no
+  // longer silently falls back to trains[0] when nothing matches.
+  const currentTrain = allTrains.find((t) => t.train_number === selectedTrainNumber);
 
   useEffect(() => {
     if (currentTrain) {
       loadTrainDetails(currentTrain.train_number);
     }
-  }, [selectedTrainNumber, trains]);
+  }, [selectedTrainNumber, trains, extraTrains]);
 
   const loadTrainDetails = async (trainNumber: string) => {
     try {
@@ -66,13 +78,52 @@ export const PassengerView: React.FC<PassengerViewProps> = ({
     }
   };
 
-  const filteredTrains = trains.filter(
+  const filteredTrains = allTrains.filter(
     (t) =>
       t.train_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.origin_station.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.destination_station.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // FIX (Bug 2): pressing Enter now actually does something. If the typed
+  // number already matches a known train, just select it (fast path, no
+  // network call needed). Otherwise, fetch it from the backend via
+  // api.getTrainDetails (this function already existed in client.ts but
+  // was never called from the UI), add it to the list, and select it.
+  const handleSearchSubmit = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter') return;
+    const query = searchTerm.trim();
+    if (!query) return;
+
+    setSearchError(null);
+
+    const existing = allTrains.find((t) => t.train_number === query);
+    if (existing) {
+      onSelectTrain(existing.train_number);
+      return;
+    }
+
+    try {
+      setSearching(true);
+      const fetched = await api.getTrainDetails(query);
+      if (!fetched || !fetched.train_number) {
+        setSearchError(`No train found for "${query}".`);
+        return;
+      }
+      setExtraTrains((prev) => {
+        // avoid duplicates if searched again later
+        const withoutDupe = prev.filter((t) => t.train_number !== fetched.train_number);
+        return [...withoutDupe, fetched];
+      });
+      onSelectTrain(fetched.train_number);
+    } catch (err) {
+      console.error('Train lookup failed:', err);
+      setSearchError(`No train found for "${query}".`);
+    } finally {
+      setSearching(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -85,9 +136,23 @@ export const PassengerView: React.FC<PassengerViewProps> = ({
             type="text"
             placeholder="Search train (e.g. 12628, Rajdhani, SBC)..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setSearchError(null);
+            }}
+            onKeyDown={handleSearchSubmit}
             className="w-full pl-10 pr-4 py-2 bg-[#121214] border border-[#2C2C2E] rounded-xl text-xs text-[#F5F5F7] placeholder-[#AAAAAA] focus:outline-none focus:border-[#007AFF] transition"
           />
+          {searching && (
+            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] text-[#AAAAAA]">
+              Searching...
+            </span>
+          )}
+          {searchError && (
+            <div className="absolute top-full left-0 mt-1 text-[10px] text-[#FF453A] font-medium">
+              {searchError}
+            </div>
+          )}
         </div>
 
         {/* Quick Train Pills */}
@@ -132,6 +197,13 @@ export const PassengerView: React.FC<PassengerViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* No train selected / not found state */}
+      {!currentTrain && (
+        <div className="glass-panel p-6 bg-[#1D1D1F] text-center text-sm text-[#AAAAAA]">
+          {searchError || 'No train selected.'}
+        </div>
+      )}
 
       {/* Main Train Status Card */}
       {currentTrain && <TrainStatusCard train={currentTrain} etaData={etaData} />}
