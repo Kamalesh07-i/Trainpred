@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Train, Navigation, SlidersHorizontal, BarChart3, Settings, Wifi, RefreshCw, Sun, Moon } from 'lucide-react';
+import { Activity, Train, Navigation, SlidersHorizontal, BarChart3, Settings, Wifi, RefreshCw, Sun, Moon, Languages } from 'lucide-react';
 import { wsClient, ConnectionStatus } from '../../api/websocket';
 import { getApiBaseUrl, setCustomApiUrl } from '../../api/client';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { Language } from '../../i18n/translations';
 
 interface HeaderProps {
   activeTab: 'passenger' | 'controller' | 'simulation' | 'metrics';
@@ -16,6 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
   const [showConfig, setShowConfig] = useState(false);
   const [customUrl, setCustomUrl] = useState(getApiBaseUrl());
   const { theme, setTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
 
   useEffect(() => {
     const updateTime = () => {
@@ -42,6 +45,12 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
     window.location.reload();
   };
 
+  const languages: { code: Language; label: string }[] = [
+    { code: 'en', label: 'EN' },
+    { code: 'ta', label: 'தமிழ்' },
+    { code: 'hi', label: 'हिंदी' },
+  ];
+
   return (
     <header className="sticky top-0 z-50 glass-panel border-b border-[#2C2C2E] px-6 py-3 mb-6 bg-[#1D1D1F]/90">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -60,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
               </span>
             </div>
             <p className="text-xs text-[var(--text-secondary)]">
-              Next-Gen Dynamic Railway ETA & Operational Disruption Intelligence
+              {t('appSubtitle')}
             </p>
           </div>
         </div>
@@ -76,7 +85,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
             }`}
           >
             <Navigation className="w-3.5 h-3.5" />
-            Passenger ETA
+            {t('navPassengerEta')}
           </button>
 
           <button
@@ -88,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
             }`}
           >
             <Activity className="w-3.5 h-3.5" />
-            Control Dispatch
+            {t('navControlDispatch')}
             {activeAlertsCount > 0 && (
               <span className="w-2 h-2 rounded-full bg-[#FF453A] animate-ping absolute top-1.5 right-1.5" />
             )}
@@ -103,7 +112,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
             }`}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            What-If Sandbox
+            {t('navWhatIfSandbox')}
           </button>
 
           <button
@@ -115,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
             }`}
           >
             <BarChart3 className="w-3.5 h-3.5" />
-            ML & XAI Metrics
+            {t('navMlMetrics')}
           </button>
         </nav>
 
@@ -125,20 +134,20 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#30D158]/10 border border-[#30D158]/30">
               <span className="w-2 h-2 rounded-full bg-[#30D158] animate-pulse" />
               <span className="text-[11px] font-medium text-[#30D158] flex items-center gap-1">
-                <Wifi className="w-3 h-3" /> LIVE WS
+                <Wifi className="w-3 h-3" /> {t('liveWs')}
               </span>
             </div>
           ) : connStatus === 'HTTP_POLLING' ? (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#007AFF]/10 border border-[#007AFF]/30">
               <span className="w-2 h-2 rounded-full bg-[#007AFF] animate-pulse" />
               <span className="text-[11px] font-medium text-[#007AFF] flex items-center gap-1">
-                <RefreshCw className="w-3 h-3 animate-spin" /> LIVE SYNC (3s)
+                <RefreshCw className="w-3 h-3 animate-spin" /> {t('liveSync')}
               </span>
             </div>
           ) : (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#FF9F0A]/10 border border-[#FF9F0A]/30">
               <span className="w-2 h-2 rounded-full bg-[#FF9F0A] animate-ping" />
-              <span className="text-[11px] font-medium text-[#FF9F0A]">SYNCING</span>
+              <span className="text-[11px] font-medium text-[#FF9F0A]">{t('syncing')}</span>
             </div>
           )}
 
@@ -147,6 +156,25 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
             <div className="text-[10px] text-[var(--text-secondary)]">
               {connStatus === 'WS_CONNECTED' ? 'SUB-50ms WS' : 'RESILIENT HTTP'}
             </div>
+          </div>
+
+          {/* Language Switcher — separate section */}
+          <div className="flex items-center gap-1 bg-[var(--bg-base)] p-1 rounded-lg border border-[var(--border-c)]">
+            <Languages className="w-3.5 h-3.5 text-[var(--text-secondary)] ml-1" />
+            {languages.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => setLanguage(l.code)}
+                title={l.label}
+                className={`px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all duration-200 ${
+                  language === l.code
+                    ? 'bg-[#007AFF] text-white shadow-md shadow-[#007AFF]/30'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                }`}
+              >
+                {l.label}
+              </button>
+            ))}
           </div>
 
           {/* Dark / Light Theme Toggle */}
@@ -161,7 +189,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
               }`}
             >
               <Moon className="w-3.5 h-3.5" />
-              <span className="hidden lg:inline">Dark</span>
+              <span className="hidden lg:inline">{t('themeDark')}</span>
             </button>
             <button
               onClick={() => setTheme('light')}
@@ -173,7 +201,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, activeA
               }`}
             >
               <Sun className="w-3.5 h-3.5" />
-              <span className="hidden lg:inline">Light</span>
+              <span className="hidden lg:inline">{t('themeLight')}</span>
             </button>
           </div>
 
